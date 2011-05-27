@@ -33,6 +33,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.SystemProperties;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
@@ -51,9 +52,10 @@ import com.android.internal.widget.LockPatternUtils;
 /**
  * Gesture lock pattern settings.
  */
-public class SecuritySettings extends PreferenceActivity {
+public class SecuritySettings extends PreferenceActivity implements
+    Preference.OnPreferenceChangeListener {
 	
-	public static final String GPS_STATUS_CHANGED="com.android.settings.GPS_STATUS_CHANGED";
+    public static final String GPS_STATUS_CHANGED="com.android.settings.GPS_STATUS_CHANGED";
 	
     private static final String KEY_UNLOCK_SET_OR_CHANGE = "unlock_set_or_change";
 
@@ -64,6 +66,7 @@ public class SecuritySettings extends PreferenceActivity {
     private static final String KEY_LOCK_ENABLED = "lockenabled";
     private static final String KEY_VISIBLE_PATTERN = "visiblepattern";
     private static final String KEY_TACTILE_FEEDBACK_ENABLED = "unlock_tactile_feedback";
+    private static final String KEY_PATTERN_LOCK_TIMEOUT = "pattern_lock_timeout";
 
     // Encrypted File Systems constants
     private static final String PROPERTY_EFS_ENABLED = "persist.security.efs.enabled";
@@ -71,6 +74,8 @@ public class SecuritySettings extends PreferenceActivity {
 
     private CheckBoxPreference mVisiblePattern;
     private CheckBoxPreference mTactileFeedback;
+
+    private ListPreference mPatternLockTimeOut;
 
     private CheckBoxPreference mShowPassword;
 
@@ -168,6 +173,15 @@ public class SecuritySettings extends PreferenceActivity {
         // tactile feedback. Should be common to all unlock preference screens.
         mTactileFeedback = (CheckBoxPreference) pm.findPreference(KEY_TACTILE_FEEDBACK_ENABLED);
 
+	// timeout for pattern lock
+	mPatternLockTimeOut = (ListPreference) pm.findPreference(KEY_PATTERN_LOCK_TIMEOUT);
+        if (mPatternLockTimeOut != null) 
+        {
+            if (mLockPatternUtils != null)
+	        mPatternLockTimeOut.setValue(String.valueOf( mLockPatternUtils.getPatternLockTimeout() ));
+	    mPatternLockTimeOut.setOnPreferenceChangeListener(this);
+        }
+
         int activePhoneType = TelephonyManager.getDefault().getPhoneType();
 
         // do not display SIM lock for CDMA phone
@@ -256,7 +270,10 @@ public class SecuritySettings extends PreferenceActivity {
             lockPatternUtils.setVisiblePatternEnabled(isToggled(preference));
         } else if (KEY_TACTILE_FEEDBACK_ENABLED.equals(key)) {
             lockPatternUtils.setTactileFeedbackEnabled(isToggled(preference));
-        } else if (preference == mShowPassword) {
+        } else if (KEY_PATTERN_LOCK_TIMEOUT.equals(key)) {
+//		int value = Integer.parseInt((String) ((ListPreference)preference).getValue());
+//		lockPatternUtils.setPatternLockTimeout(value);	
+	} else if (preference == mShowPassword) {
             Settings.System.putInt(getContentResolver(), Settings.System.TEXT_SHOW_PASSWORD,
                     mShowPassword.isChecked() ? 1 : 0);
         } else if (preference == mNetwork) {
@@ -659,4 +676,16 @@ public class SecuritySettings extends PreferenceActivity {
             }
         }
     }
+
+    public boolean onPreferenceChange(Preference preference, Object objValue) {
+        final String key = preference.getKey();
+        final LockPatternUtils lockPatternUtils = mChooseLockSettingsHelper.utils();
+
+	if (KEY_PATTERN_LOCK_TIMEOUT.equals(key)) {
+		int value = Integer.parseInt((String) objValue);
+		lockPatternUtils.setPatternLockTimeout(value);	
+	}
+        return true;
+    }
+
 }

@@ -487,6 +487,7 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener{
         if (lockVirgin) {
             utils.setVisiblePatternEnabled(true);
             utils.setTactileFeedbackEnabled(false);
+	    utils.setPatternLockTimeout(0); 
         }
 
         setResult(RESULT_FINISHED);
