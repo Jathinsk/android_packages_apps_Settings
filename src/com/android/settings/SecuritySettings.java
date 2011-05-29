@@ -173,13 +173,12 @@ public class SecuritySettings extends PreferenceActivity implements
         // tactile feedback. Should be common to all unlock preference screens.
         mTactileFeedback = (CheckBoxPreference) pm.findPreference(KEY_TACTILE_FEEDBACK_ENABLED);
 
-	// timeout for pattern lock
-	mPatternLockTimeOut = (ListPreference) pm.findPreference(KEY_PATTERN_LOCK_TIMEOUT);
-        if (mPatternLockTimeOut != null) 
-        {
+        // timeout for pattern lock
+        mPatternLockTimeOut = (ListPreference) pm.findPreference(KEY_PATTERN_LOCK_TIMEOUT);
+        if (mPatternLockTimeOut != null) {
             if (mLockPatternUtils != null)
-	        mPatternLockTimeOut.setValue(String.valueOf( mLockPatternUtils.getPatternLockTimeout() ));
-	    mPatternLockTimeOut.setOnPreferenceChangeListener(this);
+                mPatternLockTimeOut.setValue(String.valueOf( mLockPatternUtils.getPatternLockTimeout() ));
+            mPatternLockTimeOut.setOnPreferenceChangeListener(this);
         }
 
         int activePhoneType = TelephonyManager.getDefault().getPhoneType();
@@ -681,10 +680,10 @@ public class SecuritySettings extends PreferenceActivity implements
         final String key = preference.getKey();
         final LockPatternUtils lockPatternUtils = mChooseLockSettingsHelper.utils();
 
-	if (KEY_PATTERN_LOCK_TIMEOUT.equals(key)) {
-		int value = Integer.parseInt((String) objValue);
-		lockPatternUtils.setPatternLockTimeout(value);	
-	}
+        if (KEY_PATTERN_LOCK_TIMEOUT.equals(key)) {
+            int value = Integer.parseInt((String) objValue);
+            lockPatternUtils.setPatternLockTimeout(value);	
+        }
         return true;
     }
 

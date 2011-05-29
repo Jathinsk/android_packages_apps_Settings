@@ -30,6 +30,14 @@
             android:key="unlock_tactile_feedback"
             android:title="@string/lockpattern_settings_enable_tactile_feedback_title"/>
 
+        <ListPreference
+                android:key="pattern_lock_timeout"
+                android:title="@string/pattern_lock_timeout"
+                android:summary="@string/pattern_lock_timeout_summary"
+                android:persistent="false"
+                android:entries="@array/pattern_lock_timeout_entries"
+                android:entryValues="@array/pattern_lock_timeout_values" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>
